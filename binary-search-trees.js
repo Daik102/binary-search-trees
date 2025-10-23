@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-function node(data) {
+function node(value) {
   return {
-    data,
+    value,
     left: null,
     right: null
   };
@@ -35,36 +35,36 @@ function tree(array) {
       prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
     }
 
-    console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
+    console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.value}`);
 
     if (node.left !== null) {
       prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
     }
   };
 
-  const insert = (root, key) => {
+  const insert = (root, value) => {
     if (root === null) {
-      return node(key);
+      return node(value);
     }
 
-    if (key < root.data) {
-      root.left = insert(root.left, key);
+    if (value < root.value) {
+      root.left = insert(root.left, value);
     } else {
-      root.right = insert(root.right, key);
+      root.right = insert(root.right, value);
     }
 
     return root;
   };
 
-  const deleteItem = (root, key) => {
+  const deleteItem = (root, value) => {
     if (root === null) {
       return root;
     }
 
-    if (root.data > key) {
-      root.left = deleteItem(root.left, key);
-    } else if (root.data < key) {
-      root.right = deleteItem(root.right, key);
+    if (root.value > value) {
+      root.left = deleteItem(root.left, value);
+    } else if (root.value < value) {
+      root.right = deleteItem(root.right, value);
     } else {
       if (root.left === null) {
         return root.right;
@@ -81,11 +81,100 @@ function tree(array) {
       }
 
       const succ = curr;
-      root.data = succ.data;
-      root.right = deleteItem(root.right, succ.data);
+      root.value = succ.value;
+      root.right = deleteItem(root.right, succ.value);
     }
 
     return root;
+  };
+
+  const find = (root, value) => {
+    if (root === null) {
+      return root;
+    }
+
+    let current = root;
+
+    while (current !== null) {
+      if (value === current.value) {
+        return current;
+      } else if (value < current.value) {
+        current = current.left;
+      } else if (value > current.value) {
+        current = current.right;
+      }
+    }
+  };
+
+  const levelOrderForEach = (root) => {
+    if (!root) {
+      throw new Error("Callback is required.");
+    }
+
+    const result = [];
+    const queue = [root];
+    
+    while (queue.length > 0) {
+      const levelSize = queue.length;
+      const currentLevelNodes = [];
+
+      for (let i = 0; i < levelSize; i++) {
+        const node = queue.shift();
+        currentLevelNodes.push(node.value);
+
+        if (node.left) {
+          queue.push(node.left);
+        }
+
+        if (node.right) {
+          queue.push(node.right);
+        }
+      }
+      
+      result.push(currentLevelNodes);
+    }
+
+    return result;
+  };
+
+  const inOrderForEach = (root) => {
+    if (!root) {
+      throw new Error("Callback is required.");
+    }
+
+    
+  };
+
+  const preOrderForEach = (root) => {
+    if (!root) {
+      throw new Error("Callback is required.");
+    }
+
+    const result = [];
+    const stack = [root];
+    
+    while (stack.length > 0) {
+      const node = stack.pop();
+      result.push(node.value);
+
+      if (node.right !== null) {
+        stack.push(node.right);
+      }
+      
+      if (node.left !== null) {
+        stack.push(node.left);
+      }
+    }
+
+    return result;
+  };
+
+  const postOrderForEach = (root) => {
+    if (!root) {
+      throw new Error("Callback is required.");
+    }
+
+
   };
 
   return {
@@ -93,6 +182,11 @@ function tree(array) {
     prettyPrint,
     insert,
     deleteItem,
+    find,
+    levelOrderForEach,
+    inOrderForEach,
+    preOrderForEach,
+    postOrderForEach,
 
   };
 }
@@ -107,5 +201,11 @@ bst.insert(bst.root, 7);
 bst.insert(bst.root, 11);
 bst.deleteItem(bst.root, 7);
 bst.deleteItem(bst.root, 10);
+const findOne = bst.find(bst.root, 6);
+const levelOrderOne = bst.levelOrderForEach(bst.root);
+//const inOrderOne = bst.inOrderForEach(bst.root);
+const preOrderOne = bst.preOrderForEach(bst.root);
+//const postOrderForEach = bst.postOrderForEach(bst.root);
+console.log(preOrderOne);
 
 bst.prettyPrint(bst.root);
