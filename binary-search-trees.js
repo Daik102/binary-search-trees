@@ -142,7 +142,20 @@ function tree(array) {
       throw new Error("Callback is required.");
     }
 
-    
+    const result = [];
+
+    function traverse(node) {
+      if (node === null) {
+        return;
+      }
+
+      traverse(node.left);
+      result.push(node.value);
+      traverse(node.right);
+    }
+
+  traverse(root);
+  return result;
   };
 
   const preOrderForEach = (root) => {
@@ -151,22 +164,19 @@ function tree(array) {
     }
 
     const result = [];
-    const stack = [root];
-    
-    while (stack.length > 0) {
-      const node = stack.pop();
-      result.push(node.value);
 
-      if (node.right !== null) {
-        stack.push(node.right);
-      }
-      
-      if (node.left !== null) {
-        stack.push(node.left);
-      }
+  function traverse(node) {
+    if (node === null) {
+      return;
     }
 
-    return result;
+    result.push(node.value);
+    traverse(node.left);
+    traverse(node.right);
+  }
+
+  traverse(root);
+  return result;
   };
 
   const postOrderForEach = (root) => {
@@ -174,7 +184,24 @@ function tree(array) {
       throw new Error("Callback is required.");
     }
 
+    const result = [];
 
+    function traverse(node) {
+      if (node === null) {
+        return;
+      }
+
+      traverse(node.left);
+      traverse(node.right);
+      result.push(node.value);
+    }
+
+    traverse(root);
+    return result;
+  };
+
+  const height = (value) => {
+    
   };
 
   return {
@@ -187,10 +214,9 @@ function tree(array) {
     inOrderForEach,
     preOrderForEach,
     postOrderForEach,
-
+    height,
   };
 }
-
 
 const arrOne = [1, 4, 2, 9, 5, 1, 10, 6, 2];
 const bst = tree(arrOne);
@@ -203,9 +229,10 @@ bst.deleteItem(bst.root, 7);
 bst.deleteItem(bst.root, 10);
 const findOne = bst.find(bst.root, 6);
 const levelOrderOne = bst.levelOrderForEach(bst.root);
-//const inOrderOne = bst.inOrderForEach(bst.root);
+const inOrderOne = bst.inOrderForEach(bst.root);
 const preOrderOne = bst.preOrderForEach(bst.root);
-//const postOrderForEach = bst.postOrderForEach(bst.root);
-console.log(preOrderOne);
+const postOrderForEach = bst.postOrderForEach(bst.root);
+const heightOne = bst.height(4);
 
+console.log(heightOne);
 bst.prettyPrint(bst.root);
