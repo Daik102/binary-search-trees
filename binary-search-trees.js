@@ -200,8 +200,76 @@ function tree(array) {
     return result;
   };
 
-  const height = (value) => {
+  const height = (root, value) => {
+    if (root === null) {
+      return null;
+    }
+
+    function getHeight(node) {
+      if (node === null) {
+        return null;
+      }
+
+      const leftHeight = getHeight(node.left);
+      const rightHeight = getHeight(node.right);
+      
+      return Math.max(leftHeight, rightHeight) + 1;
+    }
+
+    if (root.value === value) {
+      const result = getHeight(root);
+      return result - 1;
+    }
     
+    const leftResult = height(root.left, value);
+
+    if (leftResult !== null) {
+      return leftResult; // Found in left subtree
+    }
+
+    const rightResult = height(root.right, value);
+    
+    return rightResult; // Return result from right subtree (or -1 if not found)
+  };
+
+  const depth = (root, value) => {
+    if (root === null) {
+      return -1;
+    }
+
+    function search(node, currentDepth) {
+      if (node.value === value) {
+        return currentDepth;
+      }
+
+      let leftDepth = -1;
+      let rightDepth = -1;
+      
+      if (node.left !== null) {
+        leftDepth = search(node.left, currentDepth + 1);
+      }
+
+      if (node.right !== null) {
+        rightDepth = search(node.right, currentDepth + 1);
+      }
+
+      if (leftDepth !== -1) {
+        return leftDepth;
+      }
+      if (rightDepth !== -1) {
+        return rightDepth;
+      }
+
+      return -1;
+    }
+
+    let result = search(root, 0);
+
+    if (result === -1) {
+      return null;
+    } else {
+      return result;
+    }
   };
 
   return {
@@ -215,24 +283,23 @@ function tree(array) {
     preOrderForEach,
     postOrderForEach,
     height,
+    depth,
+
   };
 }
 
-const arrOne = [1, 4, 2, 9, 5, 1, 10, 6, 2];
+const arrOne = [1, 4, 2, 9, 5, 11, 13, 3, 12, 1, 8, 7, 10, 6, 2];
 const bst = tree(arrOne);
 
-bst.insert(bst.root, 3);
-bst.insert(bst.root, 8);
-bst.insert(bst.root, 7);
-bst.insert(bst.root, 11);
-bst.deleteItem(bst.root, 7);
-bst.deleteItem(bst.root, 10);
+bst.insert(bst.root, 15);
+bst.deleteItem(bst.root, 15);
+
 const findOne = bst.find(bst.root, 6);
 const levelOrderOne = bst.levelOrderForEach(bst.root);
 const inOrderOne = bst.inOrderForEach(bst.root);
 const preOrderOne = bst.preOrderForEach(bst.root);
 const postOrderForEach = bst.postOrderForEach(bst.root);
-const heightOne = bst.height(4);
+const heightOne = bst.height(bst.root, 6);
+const depthOne = bst.depth(bst.root, 12);
 
-console.log(heightOne);
 bst.prettyPrint(bst.root);
