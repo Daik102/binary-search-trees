@@ -74,15 +74,15 @@ function tree(array) {
         return root.left;
       }
 
-      let curr = root.right;
+      let current = root.right;
 
-      while (curr !== null && curr.left !== null) {
-        curr = curr.left;
+      while (current !== null && current.left !== null) {
+        current = current.left;
       }
 
-      const succ = curr;
-      root.value = succ.value;
-      root.right = deleteItem(root.right, succ.value);
+      const successor = current;
+      root.value = successor.value;
+      root.right = deleteItem(root.right, successor.value);
     }
 
     return root;
@@ -154,8 +154,8 @@ function tree(array) {
       traverse(node.right);
     }
 
-  traverse(root);
-  return result;
+    traverse(root);
+    return result;
   };
 
   const preOrderForEach = (root) => {
@@ -165,18 +165,18 @@ function tree(array) {
 
     const result = [];
 
-  function traverse(node) {
-    if (node === null) {
-      return;
+    function traverse(node) {
+      if (node === null) {
+        return;
+      }
+
+      result.push(node.value);
+      traverse(node.left);
+      traverse(node.right);
     }
 
-    result.push(node.value);
-    traverse(node.left);
-    traverse(node.right);
-  }
-
-  traverse(root);
-  return result;
+    traverse(root);
+    return result;
   };
 
   const postOrderForEach = (root) => {
@@ -200,20 +200,20 @@ function tree(array) {
     return result;
   };
 
-  const height = (root, value) => {
-    if (root === null) {
+  const getHeight = (node) => {
+    if (node === null) {
       return null;
     }
 
-    function getHeight(node) {
-      if (node === null) {
-        return null;
-      }
+    const leftHeight = getHeight(node.left);
+    const rightHeight = getHeight(node.right);
+    
+    return Math.max(leftHeight, rightHeight) + 1;
+  };
 
-      const leftHeight = getHeight(node.left);
-      const rightHeight = getHeight(node.right);
-      
-      return Math.max(leftHeight, rightHeight) + 1;
+  const height = (root, value) => {
+    if (root === null) {
+      return null;
     }
 
     if (root.value === value) {
@@ -272,6 +272,26 @@ function tree(array) {
     }
   };
 
+  const isBalanced = (root) => {
+    if (root === null) {
+      return true;
+    }
+    
+    const leftHeight = getHeight(root.left);
+    const rightHeight = getHeight(root.right);
+    
+    if (Math.abs(leftHeight - rightHeight) > 1) {
+      return false;
+    }
+
+    return isBalanced(root.left) && isBalanced(root.right);
+  };
+
+  const rebalance = (root) => {
+    const array = inOrderForEach(root);
+    return buildTree(array, 0, array.length - 1);
+  };
+
   return {
     root: buildTree(sortedArray, 0, sortedArray.length - 1),
     prettyPrint,
@@ -284,22 +304,68 @@ function tree(array) {
     postOrderForEach,
     height,
     depth,
-
+    isBalanced,
+    rebalance
   };
 }
 
-const arrOne = [1, 4, 2, 9, 5, 11, 13, 3, 12, 1, 8, 7, 10, 6, 2];
+function createArray(quantity) {
+  const array = [];
+
+  while (array.length < quantity) {
+    const randomNum = Math.floor(Math.random() * 99) + 1; // Create from 1 to 99 random number
+    let same;
+
+    for (const item of array) {
+      if (item === randomNum) {
+        same = true;
+        break;
+      }
+    }
+
+    if (!same) {
+      array.push(randomNum);
+    }
+  }
+
+  return array;
+}
+
+const arrOne = createArray(12);
 const bst = tree(arrOne);
 
-bst.insert(bst.root, 15);
-bst.deleteItem(bst.root, 15);
+bst.insert(bst.root, 110);
+bst.insert(bst.root, 120);
+bst.insert(bst.root, 130);
+// bst.deleteItem(bst.root, 130);
 
-const findOne = bst.find(bst.root, 6);
+const findOne = bst.find(bst.root, 110);
 const levelOrderOne = bst.levelOrderForEach(bst.root);
 const inOrderOne = bst.inOrderForEach(bst.root);
 const preOrderOne = bst.preOrderForEach(bst.root);
-const postOrderForEach = bst.postOrderForEach(bst.root);
-const heightOne = bst.height(bst.root, 6);
-const depthOne = bst.depth(bst.root, 12);
+const postOrderOne = bst.postOrderForEach(bst.root);
+const heightOne = bst.height(bst.root, 120);
+const depthOne = bst.depth(bst.root, 130);
 
-bst.prettyPrint(bst.root);
+const balancedOne = bst.isBalanced(bst.root);
+const rebalanceOne = bst.rebalance(bst.root);
+const balancedTwo = bst.isBalanced(rebalanceOne);
+const levelOrderTwo = bst.levelOrderForEach(rebalanceOne);
+const inOrderTwo = bst.inOrderForEach(rebalanceOne);
+const preOrderTwo = bst.preOrderForEach(rebalanceOne);
+const postOrderTwo = bst.postOrderForEach(rebalanceOne);
+// console.log(heightOne);
+// console.log(depthOne);
+// console.log(levelOrderOne);
+// console.log(inOrderOne);
+// console.log(preOrderOne);
+// console.log(postOrderForEach);
+console.log(balancedOne);
+console.log(balancedTwo);
+
+console.log(levelOrderTwo);
+console.log(inOrderTwo);
+console.log(preOrderTwo);
+console.log(postOrderTwo);
+
+bst.prettyPrint(rebalanceOne);
